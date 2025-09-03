@@ -1,0 +1,305 @@
+{
+  "commands": [
+    {
+      "name": "genesis",
+      "description": "Transform a raw idea into a structured PRD and initialize project setup",
+      "usage": "/genesis [idea]",
+      "example": "/genesis \"Build a task management app with AI recommendations\"",
+      "category": "project_flow",
+      "phase": "ideation",
+      "behavior": [
+        "Conducts thorough requirements gathering through targeted questions",
+        "Analyzes similar products and best practices",
+        "Creates comprehensive PRD with features, user stories, and technical requirements",
+        "Sets up initial project structure and documentation",
+        "Identifies key technical decisions and constraints",
+        "Creates project roadmap with major milestones",
+        "Initializes task management folder structure"
+      ],
+      "creates": [
+        "docs/prd.md - Complete product requirements document",
+        "tasks/tasks.json - Empty task database structure"
+      ],
+      "folder_structure": {
+        "docs/": "Project documentation",
+        "tasks/": "Task management and tracking"
+      },
+      "prerequisites": [],
+      "estimated_time": "10-20 minutes"
+    },
+    {
+      "name": "parse-prd",
+      "description": "Convert PRD into structured, actionable development tasks",
+      "usage": "/parse-prd",
+      "category": "project_flow",
+      "phase": "task_decomposition",
+      "behavior": [
+        "Analyzes existing docs/prd.md for all features and requirements",
+        "Breaks down features into granular development tasks",
+        "Creates task dependency mapping",
+        "Assigns priority levels and effort estimates",
+        "Generates task IDs for tracking (TASK-001, TASK-002, etc.)",
+        "Creates initial task backlog with clear acceptance criteria",
+        "Populates the empty tasks.json structure created by /genesis"
+      ],
+      "updates": [
+        "tasks/tasks.json - Structured task database with IDs, dependencies, status"
+      ],
+      "prerequisites": ["docs/prd.md must exist"],
+      "estimated_time": "5-10 minutes"
+    },
+    {
+      "name": "next-task",
+      "description": "Load the next highest-priority task for planning",
+      "usage": "/next-task",
+      "category": "task_execution",
+      "phase": "task_selection",
+      "behavior": [
+        "Scans tasks/tasks.json for next available task based on priority and dependencies",
+        "Loads task context and requirements from the task database",
+        "Validates all dependencies are completed",
+        "Sets task status to 'planning'",
+        "Prepares task for planning-specialist agent handoff",
+        "Updates tasks.json with status change"
+      ],
+      "output": "Task details and readiness confirmation for planning phase",
+      "prerequisites": ["tasks/tasks.json must exist with pending tasks"],
+      "estimated_time": "1-2 minutes"
+    },
+    {
+      "name": "plan-task",
+      "description": "Generate detailed implementation plan using planning-specialist agent",
+      "usage": "/plan-task [task-id]",
+      "example": "/plan-task TASK-001",
+      "category": "task_execution",
+      "phase": "planning",
+      "behavior": [
+        "Loads task details from tasks/tasks.json",
+        "Invokes planning-specialist agent with task context",
+        "Agent conducts codebase exploration and requirements analysis",
+        "Creates detailed step-by-step implementation plan",
+        "Identifies files to modify, patterns to follow, and potential blockers",
+        "Estimates complexity and time requirements",
+        "Generates comprehensive plan document in tasks folder"
+      ],
+      "creates": [
+        "tasks/plan-{task-id}.md - Detailed implementation plan"
+      ],
+      "updates": [
+        "tasks/tasks.json - Plan reference and status"
+      ],
+      "invokes_agent": "planning-specialist",
+      "estimated_time": "5-15 minutes"
+    },
+    {
+      "name": "review-plan",
+      "description": "Review and validate implementation plan before execution",
+      "usage": "/review-plan [task-id]",
+      "example": "/review-plan TASK-001",
+      "category": "task_execution",
+      "phase": "plan_validation",
+      "behavior": [
+        "Loads and analyzes the task's implementation plan",
+        "Validates plan completeness and feasibility",
+        "Checks for missing dependencies or edge cases",
+        "Suggests improvements or identifies risks",
+        "Confirms plan is ready for execution",
+        "Allows plan refinement before implementation",
+        "Updates tasks/tasks.json with review status"
+      ],
+      "output": "Plan validation report and approval status",
+      "prerequisites": ["tasks/plan-{task-id}.md must exist"],
+      "estimated_time": "3-10 minutes"
+    },
+    {
+      "name": "execute-plan",
+      "description": "Execute entire implementation plan step-by-step",
+      "usage": "/execute-plan [task-id]",
+      "example": "/execute-plan TASK-001",
+      "category": "task_execution",
+      "phase": "implementation",
+      "behavior": [
+        "Loads task plan and executes each step sequentially",
+        "Updates plan document with progress as each step completes",
+        "Runs tests and validation after each major step",
+        "Handles errors by invoking cascading-debugger if needed",
+        "Maintains implementation history and progress tracking",
+        "Continues until all plan steps are completed"
+      ],
+      "output": "Completed implementation with updated plan progress",
+      "can_invoke_agents": ["cascading-debugger", "test-specialist"],
+      "prerequisites": ["tasks/plan-{task-id}.md must exist"],
+      "estimated_time": "30-120 minutes"
+    },
+    {
+      "name": "execute-step",
+      "description": "Execute a specific step from the implementation plan",
+      "usage": "/execute-step [task-id] [step-n]",
+      "example": "/execute-step TASK-001 3",
+      "category": "task_execution",
+      "phase": "implementation",
+      "behavior": [
+        "Loads specific step from task implementation plan",
+        "Executes only that step with full context",
+        "Updates plan document with step completion status",
+        "Validates step completion before marking complete",
+        "Provides granular control over implementation pace"
+      ],
+      "output": "Single step completion with updated progress",
+      "prerequisites": ["tasks/plan-{task-id}.md must exist"],
+      "estimated_time": "5-30 minutes"
+    },
+    {
+      "name": "validate-implementation",
+      "description": "Comprehensive validation before task completion",
+      "usage": "/validate-implementation [task-id]",
+      "example": "/validate-implementation TASK-001",
+      "category": "task_execution",
+      "phase": "validation",
+      "behavior": [
+        "Loads task details and implementation plan",
+        "Runs complete test suite for the project",
+        "Checks TypeScript compilation and code quality (ESLint)",
+        "Validates test coverage meets project standards (80%+)",
+        "Runs security vulnerability scans",
+        "Verifies implementation meets task acceptance criteria",
+        "Invokes test-specialist agent if coverage gaps are found",
+        "Generates comprehensive validation report"
+      ],
+      "creates": [
+        "tasks/validation-report-{task-id}.md - Detailed validation results"
+      ],
+      "updates": [
+        "tasks/tasks.json - Validation status"
+      ],
+      "quality_checks": [
+        "All tests pass",
+        "TypeScript compilation successful",
+        "Code quality standards met",
+        "Test coverage above threshold (80%+)",
+        "No security vulnerabilities",
+        "Acceptance criteria satisfied"
+      ],
+      "can_invoke_agents": ["test-specialist"],
+      "estimated_time": "5-15 minutes"
+    },
+    {
+      "name": "commit-task",
+      "description": "Commit completed task with comprehensive commit message",
+      "usage": "/commit-task [task-id]",
+      "example": "/commit-task TASK-001",
+      "category": "task_execution",
+      "phase": "completion",
+      "behavior": [
+        "Requires successful /validate-implementation before proceeding",
+        "Validates all plan steps are completed",
+        "Runs final tests and quality checks",
+        "Generates commit message referencing task ID and plan",
+        "Creates git commit with all changes",
+        "Updates tasks.json to mark task as completed",
+        "Prepares for next task in sequence"
+      ],
+      "output": "Git commit with task completion and status updates",
+      "prerequisites": ["Successful /validate-implementation required"],
+      "estimated_time": "2-5 minutes"
+    },
+    {
+      "name": "break-down",
+      "description": "Split complex tasks into smaller, manageable subtasks",
+      "usage": "/break-down [task-id]",
+      "example": "/break-down TASK-001",
+      "category": "management",
+      "phase": "task_management",
+      "behavior": [
+        "Loads task from tasks/tasks.json and analyzes complexity and scope",
+        "Identifies natural breakpoints and dependencies",
+        "Creates subtasks with clear boundaries (TASK-001a, TASK-001b, etc.)",
+        "Updates task hierarchy in tasks/tasks.json",
+        "Maintains parent-child relationships",
+        "Preserves original acceptance criteria across subtasks"
+      ],
+      "updates": [
+        "tasks/tasks.json - New subtask structure"
+      ],
+      "estimated_time": "5-15 minutes"
+    },
+    {
+      "name": "task-status",
+      "description": "Manually update task status for tracking and workflow management",
+      "usage": "/task-status [id] [status]",
+      "example": "/task-status TASK-001 completed",
+      "category": "management",
+      "phase": "task_management",
+      "behavior": [
+        "Updates specified task status in tasks/tasks.json",
+        "Validates status transition is valid",
+        "Updates dependent tasks if needed",
+        "Maintains task history and audit trail",
+        "Triggers any status-dependent actions"
+      ],
+      "valid_statuses": ["pending", "planning", "in-progress", "blocked", "completed", "cancelled"],
+      "estimated_time": "1 minute"
+    },
+    {
+      "name": "pivot",
+      "description": "Handle scope changes and requirement updates",
+      "usage": "/pivot [change]",
+      "example": "/pivot \"Add user authentication to all endpoints\"",
+      "category": "management",
+      "phase": "scope_management",
+      "behavior": [
+        "Analyzes impact of requested change on existing tasks and plans",
+        "Updates docs/prd.md with new requirements",
+        "Modifies affected tasks in tasks/tasks.json and creates new ones as needed",
+        "Updates implementation plans to accommodate changes",
+        "Identifies cascade effects on completed work",
+        "Creates change log for project tracking"
+      ],
+      "updates": [
+        "docs/prd.md - Updated requirements",
+        "tasks/tasks.json - Modified and new tasks",
+        "tasks/plan-*.md - Updated plans"
+      ],
+      "creates": [
+        "docs/change-log.md - History of all pivots and their impacts"
+      ],
+      "triggers_hook": "change-impact-tracker.py",
+      "estimated_time": "10-30 minutes"
+    },
+    {
+      "name": "sync-context",
+      "description": "Reconcile project context when implementation drifts from plans",
+      "usage": "/sync-context",
+      "category": "management",
+      "phase": "alignment",
+      "behavior": [
+        "Compares current codebase state with project documentation",
+        "Identifies discrepancies between plans and implementation",
+        "Updates docs/prd.md and tasks/tasks.json with current reality",
+        "Reconciles task status with actual completion state",
+        "Updates relevant plan files to reflect implementation changes",
+        "Maintains project coherence and accuracy"
+      ],
+      "output": "Updated project documentation and alignment recommendations",
+      "estimated_time": "10-20 minutes"
+    }
+  ],
+  "command_categories": {
+    "project_flow": "Commands for initializing and setting up projects",
+    "task_execution": "Commands for planning and executing individual tasks",
+    "management": "Commands for managing tasks, scope, and project alignment"
+  },
+  "workflow_phases": {
+    "ideation": "Transform ideas into structured requirements",
+    "task_decomposition": "Break requirements into actionable tasks",
+    "task_selection": "Choose next task to work on",
+    "planning": "Create detailed implementation plans",
+    "plan_validation": "Review and approve plans",
+    "implementation": "Execute the planned work",
+    "validation": "Validate implementation quality",
+    "completion": "Finalize and commit work",
+    "task_management": "Manage task lifecycle",
+    "scope_management": "Handle requirement changes",
+    "alignment": "Keep project documentation aligned"
+  }
+}

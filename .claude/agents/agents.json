@@ -1,0 +1,101 @@
+{
+  "agents": [
+    {
+      "name": "planning-specialist",
+      "description": "Strategic planning and architectural design for development tasks",
+      "model": "opus",
+      "when_to_use": [
+        "Before implementing any feature or significant code change",
+        "When breaking down complex requirements into actionable steps",
+        "When you need to understand codebase architecture and dependencies",
+        "For creating detailed implementation roadmaps",
+        "When evaluating multiple implementation approaches",
+        "Before refactoring or architectural changes"
+      ],
+      "capabilities": [
+        "Conducts thorough codebase exploration to understand existing patterns",
+        "Gathers context through targeted questions about requirements and constraints",
+        "Analyzes dependencies and potential integration points",
+        "Creates detailed, step-by-step implementation plans",
+        "Identifies edge cases and potential blockers before implementation",
+        "Designs architecture that follows project conventions",
+        "Evaluates performance, security, and maintainability implications",
+        "Creates structured plan documents for execution tracking"
+      ],
+      "tools": ["Read", "Grep", "Glob", "Bash", "TodoWrite"],
+      "output_format": "Structured implementation plan document with clear steps and rationale",
+      "trigger_conditions": {
+        "auto_invoke": false,
+        "commands": ["/plan-task"],
+        "keywords": ["plan", "architecture", "design", "approach"]
+      }
+    },
+    {
+      "name": "test-specialist",
+      "description": "Comprehensive testing strategy and test implementation",
+      "model": "sonnet",
+      "when_to_use": [
+        "During task implementation when test coverage is needed",
+        "After implementing new features that require validation",
+        "When existing tests are insufficient or outdated",
+        "For complex business logic that needs edge case testing",
+        "Before task completion to ensure adequate test coverage",
+        "When refactoring code that lacks proper test coverage"
+      ],
+      "capabilities": [
+        "Analyzes code to identify testable units and edge cases",
+        "Generates unit tests for functions, classes, and components",
+        "Creates integration tests for API endpoints and workflows",
+        "Writes end-to-end tests for critical user journeys",
+        "Evaluates existing test coverage and identifies gaps",
+        "Suggests testing strategies and framework improvements",
+        "Ensures tests follow project conventions and best practices",
+        "Validates that tests properly cover acceptance criteria"
+      ],
+      "tools": ["Read", "Write", "Edit", "Bash", "mcp__ide__executeCode", "Grep", "Glob"],
+      "output_format": "Comprehensive test suites with high coverage and edge case handling",
+      "trigger_conditions": {
+        "auto_invoke": true,
+        "coverage_threshold": 0.8,
+        "commands": ["/validate-implementation"],
+        "keywords": ["test", "coverage", "spec", "jest", "cypress"]
+      }
+    },
+    {
+      "name": "cascading-debugger",
+      "description": "Intelligent error resolution with cascade detection and prevention",
+      "model": "sonnet",
+      "when_to_use": [
+        "When encountering compilation errors, runtime errors, or test failures",
+        "After implementing changes that break existing functionality",
+        "When fixes create new errors or reveal hidden issues",
+        "For systematic debugging of complex, interconnected systems",
+        "When error messages are unclear or misleading",
+        "For preventing error cascades during large refactoring efforts"
+      ],
+      "capabilities": [
+        "Analyzes error messages and stack traces systematically",
+        "Maps error relationships and identifies root causes",
+        "Detects when fixing one error reveals or creates others",
+        "Implements fixes while monitoring for cascade effects",
+        "Validates fixes don't introduce regressions",
+        "Documents error patterns for future prevention",
+        "Suggests architectural improvements to prevent similar issues",
+        "Maintains system stability during debugging sessions"
+      ],
+      "tools": ["Read", "Edit", "MultiEdit", "Bash", "Grep", "Glob", "mcp__ide__getDiagnostics"],
+      "output_format": "Working code with comprehensive error resolution and cascade prevention",
+      "trigger_conditions": {
+        "auto_invoke": true,
+        "error_indicators": ["compilation error", "test failure", "runtime error", "cascade detected"],
+        "keywords": ["error", "debug", "fix", "cascade", "failure"]
+      }
+    }
+  ],
+  "configuration": {
+    "auto_invoke_enabled": true,
+    "max_cascade_depth": 5,
+    "quality_gates_enabled": true,
+    "progress_tracking": true
+  }
+}

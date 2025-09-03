@@ -1,0 +1,113 @@
+{
+  "version": "1.0.0",
+  "project_name": "vibestack-cc",
+  "description": "Claude Code configuration for vibestack-cc project with comprehensive workflow management",
+  
+  "agents": {
+    "config_file": "./agents/agents.json",
+    "auto_invoke": true,
+    "agent_timeout": 300,
+    "max_agent_depth": 3
+  },
+  
+  "commands": {
+    "config_file": "./commands/commands.json",
+    "prefix": "/",
+    "enable_autocomplete": true,
+    "command_history": true,
+    "max_history": 100
+  },
+  
+  "hooks": {
+    "config_file": "./hooks/hooks.json",
+    "enabled": true,
+    "execution_mode": "async",
+    "log_level": "INFO"
+  },
+  
+  "workflow": {
+    "phases": [
+      "ideation",
+      "task_decomposition", 
+      "task_selection",
+      "planning",
+      "plan_validation",
+      "implementation",
+      "validation",
+      "completion"
+    ],
+    "default_flow": [
+      "/genesis",
+      "/parse-prd",
+      "/next-task",
+      "/plan-task",
+      "/execute-plan",
+      "/validate-implementation", 
+      "/commit-task"
+    ],
+    "quality_gates": {
+      "pre_implementation": ["plan-quality-validator"],
+      "during_implementation": ["task-quality-gate", "plan-drift-monitor"],
+      "post_implementation": ["validation", "test-coverage"],
+      "error_handling": ["error-cascade-monitor"]
+    }
+  },
+  
+  "project_structure": {
+    "docs_dir": "docs",
+    "tasks_dir": "tasks", 
+    "plans_pattern": "tasks/plan-*.md",
+    "validation_pattern": "tasks/validation-report-*.md",
+    "prd_file": "docs/prd.md",
+    "tasks_file": "tasks/tasks.json"
+  },
+  
+  "quality_standards": {
+    "typescript": {
+      "strict": true,
+      "noEmit": true,
+      "check_command": "npx tsc --noEmit"
+    },
+    "eslint": {
+      "enabled": true,
+      "check_command": "npx eslint . --format json",
+      "max_errors": 0,
+      "max_warnings": 10
+    },
+    "testing": {
+      "framework": "jest",
+      "coverage_threshold": 80,
+      "test_command": "npm test",
+      "coverage_command": "npm run test:coverage"
+    }
+  },
+  
+  "integrations": {
+    "git": {
+      "auto_commit": false,
+      "commit_message_template": "{task_id}: {task_title}\n\n{implementation_summary}\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+      "branch_naming": "task/{task_id}-{task_slug}"
+    },
+    "github": {
+      "pr_template": "## Summary\n{task_summary}\n\n## Implementation\n{implementation_details}\n\n## Testing\n{testing_approach}\n\n🤖 Generated with Claude Code",
+      "auto_pr": false
+    }
+  },
+  
+  "ai_behavior": {
+    "planning_detail_level": "comprehensive",
+    "error_handling_strategy": "cascade_prevention",
+    "progress_tracking": true,
+    "context_awareness": true,
+    "quality_enforcement": "strict"
+  },
+  
+  "logging": {
+    "enabled": true,
+    "log_file": ".claude/logs/claude-code.log",
+    "log_level": "INFO",
+    "rotate_logs": true,
+    "max_log_size": "10MB",
+    "max_log_files": 5
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "hooks": [
+    {
+      "name": "task-quality-gate",
+      "description": "Enforce code quality standards before task progression",
+      "script": "./task-quality-gate.py",
+      "trigger": "PostToolUse",
+      "priority": "HIGH",
+      "enabled": true,
+      "blocking": true,
+      "trigger_conditions": {
+        "tools": ["Edit", "MultiEdit", "Write", "NotebookEdit"],
+        "file_patterns": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+        "context_required": ["tasks/tasks.json"]
+      },
+      "timeout_seconds": 60,
+      "retry_count": 1
+    },
+    {
+      "name": "error-cascade-monitor",
+      "description": "Detect and prevent error cascades during debugging",
+      "script": "./error-cascade-monitor.py",
+      "trigger": "PostToolUse",
+      "priority": "HIGH",
+      "enabled": true,
+      "blocking": false,
+      "trigger_conditions": {
+        "agent_invoked": ["cascading-debugger"],
+        "keywords": ["error", "debug", "fix", "cascade"],
+        "tools": ["Bash", "Edit", "MultiEdit"]
+      },
+      "timeout_seconds": 90,
+      "retry_count": 2
+    },
+    {
+      "name": "context-drift-detection",
+      "description": "Monitor alignment between implementation and original task intent",
+      "script": "./context-drift-detection.py",
+      "trigger": "PostToolUse",
+      "priority": "MEDIUM",
+      "enabled": true,
+      "blocking": false,
+      "trigger_conditions": {
+        "tools": ["Edit", "MultiEdit", "Write"],
+        "file_patterns": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.py", "*.go"],
+        "context_required": ["tasks/tasks.json"],
+        "exclude_patterns": ["node_modules/*", ".git/*", "dist/*"]
+      },
+      "timeout_seconds": 30,
+      "retry_count": 1
+    },
+    {
+      "name": "change-impact-tracker",
+      "description": "Track ripple effects of scope changes and pivots",
+      "script": "./change-impact-tracker.py",
+      "trigger": "PostToolUse",
+      "priority": "MEDIUM",
+      "enabled": true,
+      "blocking": false,
+      "trigger_conditions": {
+        "commands": ["/pivot"],
+        "file_changes": ["docs/prd.md", "tasks/tasks.json", "docs/change-log.md"],
+        "keywords": ["pivot", "scope change", "requirements"]
+      },
+      "timeout_seconds": 45,
+      "retry_count": 1
+    },
+    {
+      "name": "plan-quality-validator",
+      "description": "Validate implementation plans before execution begins",
+      "script": "./plan-quality-validator.py",
+      "trigger": "PostToolUse",
+      "priority": "HIGH",
+      "enabled": true,
+      "blocking": false,
+      "trigger_conditions": {
+        "commands": ["/plan-task"],
+        "file_patterns": ["tasks/plan-*.md"],
+        "agent_invoked": ["planning-specialist"],
+        "file_creation": true
+      },
+      "timeout_seconds": 20,
+      "retry_count": 1
+    },
+    {
+      "name": "implementation-progress-tracker",
+      "description": "Track implementation progress and update plan documents",
+      "script": "./implementation-progress-tracker.py",
+      "trigger": "PostToolUse",
+      "priority": "LOW",
+      "enabled": true,
+      "blocking": false,
+      "trigger_conditions": {
+        "commands": ["/execute-step", "/execute-plan"],
+        "file_patterns": ["tasks/plan-*.md"],
+        "tools": ["Edit", "MultiEdit", "Write"]
+      },
+      "timeout_seconds": 15,
+      "retry_count": 1
+    },
+    {
+      "name": "plan-drift-monitor",
+      "description": "Monitor deviation between implementation and plan during execution",
+      "script": "./plan-drift-monitor.py",
+      "trigger": "PostToolUse",
+      "priority": "MEDIUM",
+      "enabled": true,
+      "blocking": false,
+      "trigger_conditions": {
+        "context_required": ["tasks/tasks.json"],
+        "git_changes": true,
+        "task_status": ["in-progress"],
+        "tools": ["Edit", "MultiEdit", "Write", "Bash"]
+      },
+      "timeout_seconds": 30,
+      "retry_count": 1
+    }
+  ],
+  "global_settings": {
+    "max_concurrent_hooks": 3,
+    "default_timeout": 30,
+    "enable_logging": true,
+    "log_file": "claude-hooks.log",
+    "error_handling": "continue",
+    "hook_execution_order": [
+      "task-quality-gate",
+      "plan-quality-validator", 
+      "error-cascade-monitor",
+      "plan-drift-monitor",
+      "context-drift-detection",
+      "change-impact-tracker",
+      "implementation-progress-tracker"
+    ]
+  },
+  "environment": {
+    "python_executable": "python3",
+    "required_packages": ["subprocess", "json", "pathlib", "datetime", "re"],
+    "working_directory": ".",
+    "environment_variables": {
+      "CLAUDE_HOOK_ENV": "production",
+      "CLAUDE_PROJECT_ROOT": "."
+    }
+  }
+}
