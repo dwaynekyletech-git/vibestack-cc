@@ -1,0 +1,12 @@
+{
+  "hooks": {},
+  "permissions": {
+    "allow": ["**/*"],
+    "deny": [
+      "**/.env*",
+      "**/node_modules/**",
+      "**/.git/**"
+    ]
+  },
+  "model": "claude-sonnet-4-20250514"
+}
